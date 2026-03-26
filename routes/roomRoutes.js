@@ -1,27 +1,10 @@
 import express from "express";
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { cloudinary, createStorage } from "../config/cloudinary.js";
 import Room from "../models/Room.js";
 import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
-
-// Cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Multer + Cloudinary storage
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "rph-hostel/rooms",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-});
-const upload = multer({ storage });
+const upload = multer({ storage: createStorage("rooms") });
 
 // GET all rooms — PUBLIC (so frontend Home/Rooms page can fetch without auth)
 router.get("/", async (req, res) => {

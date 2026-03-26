@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
 });
 
 // Admin: Get all bookings (newest first)
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     res.json(bookings);

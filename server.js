@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { json, urlencoded } from "express";
 import cors from "cors";
-import {connectDB} from "./config/db.js";
+import { connectDB } from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
@@ -38,6 +38,13 @@ server.use("/api/settings", settingsRoutes);
 
 // CORS is already configured above
 
+
+server.get("/health", (req, res) => res.json({ status: "ok" }));
+
+server.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: "Something went wrong! Internal Server Error" });
+});
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => console.log("Server running at", port));
