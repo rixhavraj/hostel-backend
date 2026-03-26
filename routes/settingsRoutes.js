@@ -1,7 +1,7 @@
-const express = require("express");
+import express from "express";
+import Settings from "../models/Settings.js";
+import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
-const Settings = require("../models/Settings");
-const { auth } = require("../middleware/authMiddleware");
 
 // Get settings (Public)
 router.get("/", async (req, res) => {
@@ -33,4 +33,4 @@ router.patch("/", auth, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

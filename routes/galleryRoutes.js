@@ -1,9 +1,9 @@
-const express = require("express");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const Gallery = require("../models/Gallery");
-const { auth } = require("../middleware/authMiddleware");
+import express from "express";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import Gallery from "../models/Gallery.js";
+import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Cloudinary config (reuse from env)
@@ -65,4 +65,4 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

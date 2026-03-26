@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const { auth } = require("../middleware/authMiddleware");
+import express from "express";
+import { auth } from "../middleware/authMiddleware.js";
+import Booking from "../models/Booking.js";
+import Room from "../models/Room.js";
 
-const Booking = require("../models/Booking");
-const Room = require("../models/Room");
+const router = express.Router();
 
 // ADMIN DASHBOARD SUMMARY
 router.get("/stats", auth, async (req, res) => {
@@ -46,4 +46,4 @@ router.get("/rooms", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

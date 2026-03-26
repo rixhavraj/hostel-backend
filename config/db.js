@@ -1,21 +1,20 @@
 // backend/config/db.js
-const mongoose = require("mongoose");
+import { connect } from "mongoose";
 
-const connectDB = async () => {
+export async function connectDB() {
   try {
     const uri = process.env.MONGO_URI;
     if (!uri) throw new Error("MONGO_URI missing in .env");
 
-    await mongoose.connect(uri, {});
+    await connect(uri, {});
 
     console.log("MongoDB Atlas connected");
   } catch (err) {
     console.error("MongoDB connection error:", err);
     process.exit(1);
   }
-};
+}
 
-module.exports = connectDB;
 
 /*
 This file is the Database Connector. Its only job is to dial the "phone number" of your MongoDB database and establish a connection so your app can save and retrieve data.
@@ -23,12 +22,12 @@ This file is the Database Connector. Its only job is to dial the "phone number" 
 Here is the line-by-line breakdown:
 
 Part 1: Bringing in the Tool (Line 2)
-Line 2: const mongoose = require("mongoose");
+Line 2: import mongoose from "mongoose";
 
 Mongoose is the library (tool) that lets Node.js talk to MongoDB easily. Without this, you would have to write raw, complex database code.
 
 Part 2: Defining the Action (Line 4)
-Line 4: const connectDB = async () => {
+Line 4: export const connectDB = async () => {
 
 We create a function called connectDB.
 
@@ -77,7 +76,7 @@ The Emergency Stop: This command kills the server immediately.
 Why kill it? If the database isn't connected, your API cannot save bookings or log users in. There is no point in keeping the server running if it can't do its job.
 
 Part 5: Exporting (Line 19)
-Line 19: module.exports = connectDB;
+Line 19: 
 
 This sends this function over to server.js, where you call it using connectDB() when the app starts.
 */

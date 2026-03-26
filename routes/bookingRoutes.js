@@ -1,6 +1,6 @@
-const express = require("express");
-const Booking = require("../models/Booking");
-const { auth } = require("../middleware/authMiddleware");
+import express from "express";
+import Booking from "../models/Booking.js";
+import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Public: User submits booking request
@@ -48,4 +48,4 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

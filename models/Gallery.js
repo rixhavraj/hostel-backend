@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const gallerySchema = new mongoose.Schema({
   url: { type: String, required: true },
@@ -6,4 +6,4 @@ const gallerySchema = new mongoose.Schema({
   publicId: { type: String, default: "" }, // Cloudinary public_id for deletion
 }, { timestamps: true });
 
-module.exports = mongoose.model("Gallery", gallerySchema);
+export default mongoose.model("Gallery", gallerySchema);

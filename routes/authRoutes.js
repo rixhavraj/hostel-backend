@@ -1,65 +1,37 @@
-// bring in Express library so we can create routes and use router features
-const express = require("express");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-// import bcryptjs - used to compare hashed passwords (you store hashed passwords in DB)
-const bcrypt = require("bcryptjs");
-
-// import jsonwebtoken - used to create a signed token (JWT) so client can authenticate
-const jwt = require("jsonwebtoken");
-
-// import the User model - this is your MongoDB model representing admin/users collection
-const User = require("../models/User");
-
-// create a new router instance from Express.
-// A router is like a mini-app: you attach route handlers to it and then export it to be used by main server.
 const router = express.Router();
 
-// Define a POST route at "/login" on this router.
-// When client sends POST /api/auth/login (assuming you mount router at /api/auth),
-// this async function will run with request and response objects.
 router.post("/login", async (req, res) => {
   try {
-    // pull email and password out from the request body.
-    // This assumes the frontend sent JSON like { email: "...", password: "..." }.
     const { email, password } = req.body;
 
-    // quick validation: if email or password missing, return HTTP 400 (bad request)
-    // and a small JSON message explaining the problem.
     if (!email || !password)
       return res.status(400).json({ message: "email and password required" });
 
-    // find an admin/user document in MongoDB with the given email.
-    // User.findOne({ email }) returns the first match or null if not found.
     const admin = await User.findOne({ email });
 
-    // if no user found, return 400 and a message "User not found"
     if (!admin)
       return res.status(400).json({ message: "User not found" });
 
-    // compare provided plain-text password with hashed password stored in DB.
-    // bcrypt.compare returns true if they match.
     const match = await bcrypt.compare(password, admin.password);
 
-    // if password doesn't match, 400 with "Incorrect password"
     if (!match)
       return res.status(400).json({ message: "Incorrect password" });
 
-    // create a JWT (signed token) with a payload containing the user's id.
-    // "SECRET_KEY" is a placeholder — in production use a secure secret from env vars.
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET || "SECRET_KEY", {expiresIn:"7d"});
 
-    // send the token back as JSON so frontend can store it and use for authenticated requests.
     res.json({ token });
   } catch (err) {
-    // if anything goes wrong (DB error, coding error), log it to server console
     console.log("Login error:", err);
-    // send a 500 server error with a simple message
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// export the router so the main server (server.js) can mount it at /api/auth
-module.exports = router;
+export default router;
 
 
 

@@ -1,7 +1,7 @@
-const express = require("express");
+import express from "express";
+import Contact from "../models/Contact.js";
+import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
-const Contact = require("../models/Contact");
-const { auth } = require("../middleware/authMiddleware");
 
 // User submits contact form
 router.post("/", async (req, res) => {
@@ -33,4 +33,4 @@ router.delete("/:id", auth, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
