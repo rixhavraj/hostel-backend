@@ -16,8 +16,8 @@ connectDB();
 
 server.use(cors({
     origin: [
-        "https://hostel-frontend-phi.vercel.app",
-        "https://web-production-33dfa.up.railway.app",
+        process.env.CORS_ORIGIN_URL_frontend,
+        process.env.CORS_ORIGIN_URL_backend,
         "http://localhost:5173",
         "http://localhost:5000"
     ],
@@ -46,5 +46,5 @@ server.use((err, req, res, next) => {
     res.status(500).json({ error: "Something went wrong! Internal Server Error" });
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 server.listen(port, () => console.log("Server running at", port));

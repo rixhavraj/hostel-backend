@@ -1,4 +1,3 @@
-// backend/config/db.js
 import { connect } from "mongoose";
 
 export async function connectDB() {
