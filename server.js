@@ -16,8 +16,15 @@ connectDB();
 
 server.use(cors({
     origin: [
+        "http://localhost:5000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:3030",
         process.env.CORS_ORIGIN_URL_backend,
         process.env.CORS_ORIGIN_URL_frontend,
+        process.env.CORS_ORIGIN_URL_local,
+        process.env.CORS_ORIGIN_URL_local_alt
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
