@@ -49,6 +49,10 @@ router.delete("/:id", auth, async (req, res) => {
 // POST upload image for a room — Admin only
 router.post("/:id/upload-image", auth, upload.single("image"), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image file is required" });
+    }
+
     const imageUrl = req.file.path;
     const room = await Room.findByIdAndUpdate(
       req.params.id,

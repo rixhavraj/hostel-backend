@@ -16,10 +16,8 @@ connectDB();
 
 server.use(cors({
     origin: [
-        process.env.CORS_ORIGIN_URL_frontend,
         process.env.CORS_ORIGIN_URL_backend,
-        "http://localhost:5173",
-        "http://localhost:5000"
+        process.env.CORS_ORIGIN_URL_frontend,
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -42,8 +40,10 @@ server.use("/api/settings", settingsRoutes);
 server.get("/health", (req, res) => res.json({ status: "ok" }));
 
 server.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: "Something went wrong! Internal Server Error" });
+    console.error(err.stack || err);
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Something went wrong! Internal Server Error";
+    res.status(status).json({ error: message });
 });
 
 const port = process.env.PORT || 8000;

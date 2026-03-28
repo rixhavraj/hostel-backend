@@ -12,7 +12,7 @@ const createStorage = (folder) => new CloudinaryStorage({
   cloudinary,
   params: {
     folder: `rph-hostel/${folder}`,
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "jfif", "heic", "heif", "avif"],
   },
 });
 
