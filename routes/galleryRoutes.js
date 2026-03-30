@@ -6,7 +6,6 @@ import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
 const upload = multer({
   storage: createStorage("gallery"),
-  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 const extractPublicIdFromUrl = (imageUrl) => {
