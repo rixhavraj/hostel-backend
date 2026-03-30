@@ -9,6 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dummyPath = path.join(__dirname, "dummy.png");
 
+const gallery=process.env.gallery_url;
+
 // 1x1 transparent PNG so Cloudinary gets a real image file.
 const tinyPngBase64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
@@ -36,7 +38,7 @@ const run = async () => {
         formData.append("image", fs.createReadStream(dummyPath), "dummy.png");
         formData.append("caption", "Test Caption");
 
-        const res = await axios.post("http://localhost:5000/api/gallery", formData, {
+        const res = await axios.post(gallery, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 ...formData.getHeaders(),

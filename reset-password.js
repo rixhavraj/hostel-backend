@@ -8,8 +8,8 @@ const resetPassword = async () => {
     try {
         await connectDB();
         const email = process.env.ADMIN_EMAIL;
-        const newPassword = process.env.ADMIN_PASSWORD; // keeping it exactly "admin" or "admin123"
-        // Let's make it admin123 and tell the user!
+        const newPassword = process.env.ADMIN_PASSWORD; // keeping it exactly 
+        
         const hashedPassword = await bcrypt.hash("admin123", 10);
         
         const user = await User.findOneAndUpdate(
