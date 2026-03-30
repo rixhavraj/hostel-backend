@@ -6,6 +6,27 @@ import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
 const upload = multer({ storage: createStorage("rooms") });
 
+const extractPublicIdFromUrl = (imageUrl) => {
+  if (!imageUrl) return null;
+
+  try {
+    const url = new URL(imageUrl);
+    const pathParts = url.pathname.split("/").filter(Boolean);
+    const uploadIndex = pathParts.indexOf("upload");
+    if (uploadIndex === -1) return null;
+
+    const afterUpload = pathParts.slice(uploadIndex + 1);
+    const versionIndex = afterUpload.findIndex((part) => /^v\d+$/.test(part));
+    const publicIdParts = versionIndex >= 0 ? afterUpload.slice(versionIndex + 1) : afterUpload;
+    if (!publicIdParts.length) return null;
+
+    const joined = publicIdParts.join("/");
+    return joined.replace(/\.[^/.]+$/, "");
+  } catch {
+    return null;
+  }
+};
+
 // GET all rooms — PUBLIC (so frontend Home/Rooms page can fetch without auth)
 router.get("/", async (req, res) => {
   try {
@@ -39,7 +60,21 @@ router.patch("/:id", auth, async (req, res) => {
 // DELETE room — Admin only
 router.delete("/:id", auth, async (req, res) => {
   try {
-    await Room.findByIdAndDelete(req.params.id);
+    const room = await Room.findById(req.params.id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    // Best-effort cloud cleanup for all room images.
+    for (const imageUrl of room.images || []) {
+      const publicId = extractPublicIdFromUrl(imageUrl);
+      if (!publicId) continue;
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (cloudErr) {
+        console.warn("Cloudinary cleanup failed for room delete:", cloudErr.message);
+      }
+    }
+
+    await room.deleteOne();
     res.json({ message: "Room deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -68,12 +103,30 @@ router.post("/:id/upload-image", auth, upload.single("image"), async (req, res) 
 // DELETE an image from a room — Admin only
 router.delete("/:id/image", auth, async (req, res) => {
   try {
-    const { imageUrl } = req.body;
-    const room = await Room.findByIdAndUpdate(
-      req.params.id,
-      { $pull: { images: imageUrl } },
-      { new: true }
-    );
+    const imageUrl = req.body?.imageUrl || req.query?.imageUrl;
+    if (!imageUrl) {
+      return res.status(400).json({ error: "imageUrl is required" });
+    }
+
+    const room = await Room.findById(req.params.id);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    const originalCount = room.images?.length || 0;
+    room.images = (room.images || []).filter((img) => img !== imageUrl);
+    if (room.images.length === originalCount) {
+      return res.status(404).json({ error: "Image not found in room" });
+    }
+
+    const publicId = extractPublicIdFromUrl(imageUrl);
+    if (publicId) {
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (cloudErr) {
+        console.warn("Cloudinary image delete failed:", cloudErr.message);
+      }
+    }
+
+    await room.save();
     res.json(room);
   } catch (err) {
     res.status(500).json({ error: err.message });
